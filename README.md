@@ -1,6 +1,6 @@
 # SNAKE
 
-by: (@v.ii.n.i)[https://instagram.com/v.ii.n.i]
+by: [@v.ii.n.i](https://instagram.com/v.ii.n.i)
 
 Project made with python and pygame. A simple game snake.
 
