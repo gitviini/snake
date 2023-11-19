@@ -1,85 +1,65 @@
 import pygame
-from utils import new_apple
+from utils import new_apple, add, snake_move, screen_effect
+
 #SET
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((600, 600))
 clock = pygame.time.Clock()
 running = True
-dt = 0
 direction = pygame.Vector2(0,0)
-click = 0
 apples = 0
 position = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-position_apple = 0
+position_apple = []
 tam = 1
 pixels = []
-
-def add(pixels = []):
-    if len(pixels) > tam:
-        del pixels[0]
-    for pixel in pixels:
-        pygame.draw.rect(screen, 'green', [pixel[0],pixel[1],20,20], 0)
-    if tam > 2:
-        for pixel in pixels[:-1]:
-            if pixel == [position.x,position.y]:
-                pygame.QUIT()
+color = {'background':(22,33,44),'snake':'green','apple':'red','text':'white'}
 
 #RUN
 if __name__ == '__main__':
     pygame.init()
     
     while running:
+        #COLOR SCREEN
+        screen.fill(color['background'])           
+        
         #QUIT
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        #COLOR SCREEN
-        screen.fill((22,33,44))
+            pygame.quit() if event.type == pygame.QUIT else {}
         
-        if(apples == 0):
-            position_apple = new_apple((screen.get_width(),screen.get_height()))
+        #IF APPLE ARE AT PLACE OF SNAKE
+        if apples == 0:
+            position_apple = new_apple(screen, tam)
             apples = 1
-        #PLAYER SET
-        pygame.draw.rect(screen, 'red', [position_apple[0],position_apple[1],20,20])
-
-        screen.blit(pygame.font.SysFont('monospace', 18).render(f'pontos: {tam-1}', False, 'red'), [10,10])
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_w] and direction.y == 0:
-            direction.x = 0
-            direction.y = -1
-        elif keys[pygame.K_s] and direction.y == 0:
-            direction.x = 0
-            direction.y = 1
-        elif keys[pygame.K_d] and direction.x == 0:
-            direction.y = 0
-            direction.x = 1
-        elif keys[pygame.K_a] and direction.x == 0:
-            direction.y = 0
-            direction.x = -1
-        if keys[pygame.K_o]:
-            running = False
-
         if position_apple[0] == position.x and position_apple[1] == position.y:
             tam+=1
-            position_apple = new_apple((screen.get_width(),screen.get_height()))
+            apples=0
+        #DRAWING APPLES
+        pygame.draw.rect(screen, color['apple'], [position_apple[0],position_apple[1],20,20]) 
+            
+        #PLAYER SET
+        pixels.append([position.x,position.y])
+        running = add(screen,tam,position,pixels,pygame)
+        
+        #SNAKE'S DIRECTION    
+        direction = snake_move(pygame, direction)
+        
+        #ROUNDING POSITION
         position.x += round(direction.x * 20) 
         position.y += round(direction.y * 20)
         
-        pixels.append([position.x,position.y])
-        add(pixels)
+        #EFFEITO DISPLAY INFINITE
+        position = screen_effect(screen, position, direction)
         
-        if position.y >= screen.get_height() and direction.y > 0:
-            position.y = 0
-        if position.y < 0 and direction.y < 0:
-            position.y = screen.get_height()
-        if position.x >= screen.get_width() and direction.x > 0:
-            position.x = 0
-        if position.x < 0 and direction.x < 0:
-            position.x = screen.get_width()
-            
+        #STATES
+        screen.blit(pygame.font.SysFont('monospace', 18).render(f'pontos: {tam-1}', False, color['text']), [10,10])
+        
+        #NAME WINDOW
         pygame.display.set_caption('flap')
+        
+        #UPDATE DISPLAY
         pygame.display.flip()
         pygame.display.update()
-        dt = clock.tick(12) /100
         
+        #FRAMES
+        clock.tick(10)
+    
     pygame.quit()
