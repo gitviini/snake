@@ -1,6 +1,6 @@
 # SNAKE
 
-by: [@v.ii.n.i](https://instagram.com/v.ii.n.i)
+by: <a href='https://instagram.com/v.ii.n.i' target='_blank'>@v.ii.n.i</a>
 
 Project made with python and pygame. A simple game snake.
 
